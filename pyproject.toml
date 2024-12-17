@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "noughts-crosses-qt6"
+version = "1.0.0"
+description = "Project for my college course"
+authors = ["Cornelius-Figgle <max@fullimage.net>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pyqt6 = "^6.8.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

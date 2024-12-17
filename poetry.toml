@@ -1,0 +1,4 @@
+[virtualenvs]
+# I overwrite this locally since I store the project on a SMB share
+# and venv doesn't play nice with SMB :(
+in-project = false

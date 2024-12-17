@@ -1,3 +1,3 @@
-# Noughts & Crosses Project
+# Noughts & Crosses Project (PYQT6)
 
-A project for my college course.
+Project for my college course.
