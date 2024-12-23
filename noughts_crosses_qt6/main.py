@@ -2,12 +2,6 @@
 
 '''
 # Noughts & Crosses Project (PYQT6)
-
-1. Draw a board/grid using a data structure of your choice
-2. Create a two player game with turns
-3. Create a winning function to test if after a turn there is a winner
-4. Create a AI-ish predictive function that has predicted moves to win - in a "you versus the computer" game. Have the computer aim to play to win the game.
-5. Integrate Pygame/Tkinker to create a window type GUI
 '''
 
 __version__ = '1.0.0'  
@@ -19,7 +13,7 @@ __license__ = 'MIT'
 __status__ = 'Development'
 __credits__ = ['Max Harrison']
 
-# source: https://github.com/Cornelius-Figgle/noughts-crosses-qt6
+# source code: https://github.com/Cornelius-Figgle/noughts-crosses-qt6
 
 
 from typing import Literal
@@ -51,57 +45,82 @@ class Game:
 
         # define a blank board
         # a value of 0 represents a blank tile
-        # a value of 1 represents player1's selections, or a nought
-        # a value of -1 represents player2's selections, or a cross
+        # a non-zero value represents the player indexed by `GAMETYPES`
         self.board = [
             [0, 0, 0],
             [0, 0, 0],
             [0, 0, 0]
         ]
 
-        # set current gametype
+        # set current game settings
         self.cur_game = self.GAMETYPES[gametype]
+        self.cur_player = 1
 
         return
 
-    def player_turn(self, id: int) -> None:
+    def take_turn(self, pos: tuple[int,int] = None) -> None:
         '''
-            
-        '''
-        
-        print(f'player {id}')
-        
-        return
-    
-    def cpu_turn(self, id: int) -> None:
-        '''
-            
-        '''
+        Either updates the board based on the tile coordinate passed in,
+        or takes a turn as the cpu 'player'. 
 
-        print(f'cpu {id}')
-        
-        return
-
-    def check_win(self, id: int) -> bool:
-        '''
-            
-        '''
-
-        return
-
-    def gameloop(self) -> None:
-        '''
-            
+        Then pass control to the next player. 
         '''
 
         while True:
-            for i in range(len(self.cur_game)):
-                match self.cur_game[i]:
-                    case 'player_turn':
-                        self.player_turn(i)
-                        self.InterfaceObj.draw_board()
-                    case 'cpu_turn':
-                        self.cpu_turn(i)
-                        self.InterfaceObj.draw_board()
-        
+            # either update the board to reflect the user's input
+            # or let the cpu 'player' take its turn
+            match self.cur_game[self.cur_player - 1]:
+                case 'player_turn':
+                    # check if selected tile is empty
+                    if self.board[pos[1]][pos[0]] == 0:
+                        # update board
+                        self.board[pos[1]][pos[0]] = self.cur_player
+                    else:
+                        # inform user of invalid move and exit
+                        # so that they can select another tile
+
+                        ...  # TODO: `QMessageBox`
+                        
+                        break
+                case 'cpu_turn':
+                    self.cpu_turn()
+                
+            # redraw board
+            self.InterfaceObj.draw_board()
+
+            # next player
+            self.cur_player += 1
+
+            # reset player count if all players have had their turn
+            if self.cur_player > len(self.cur_game):
+                self.cur_player = 1
+
+            # if next player is the cpu then loop
+            # if next player is the user then exit and wait for input
+            match self.cur_game[self.cur_player - 1]:
+                case 'player_turn':
+                    # break and wait for user input
+                    break
+                case 'cpu_turn':
+                    # loop and take turn
+                    continue
+                    
+        return
+
+    def cpu_turn(self) -> None:
+        '''
+        Takes a go as the cpu 'player'.  
+        '''
+
+        ...
+
+        return
+    
+    def check_win(self) -> None:
+        '''
+            
+        '''
+
+        ...  # TODO: `QMessageBox`
+
         return

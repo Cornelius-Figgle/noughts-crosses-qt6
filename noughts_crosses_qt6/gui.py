@@ -13,7 +13,7 @@ __license__ = 'MIT'
 __status__ = 'Development'
 __credits__ = ['Max Harrison']
 
-# source: https://github.com/Cornelius-Figgle/noughts-crosses-qt6
+# source code: https://github.com/Cornelius-Figgle/noughts-crosses-qt6
 
 
 import sys
@@ -64,16 +64,6 @@ class GUI_Interface(QMainWindow):
 
         return
 
-    def update_board(self, pos: tuple[int,int]) -> None:
-        '''
-            
-        '''
-
-        self.GameObj.board[pos[1]][pos[0]] = 1
-        self.draw_board()
-
-        return
-
     def draw_board(self) -> None:
         '''
         Draws the board and its tiles to the window.
@@ -103,7 +93,7 @@ class GUI_Interface(QMainWindow):
                 )
                 psuedo_button.setLineWidth(2)
                 psuedo_button.mousePressEvent = lambda event, pos=(x,y): \
-                    self.update_board(pos)
+                    self.GameObj.take_turn(pos)
 
                 # add the tile to the board layout
                 self.board_layout.addWidget(psuedo_button,y,x)
