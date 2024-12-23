@@ -27,25 +27,34 @@ class Game:
     Main progam logic.
     '''
 
-    def __init__(self, gametype: str = 'cpu') -> None:
+    def __init__(self, gametype: Literal[str] = 'cpu') -> None:
         '''
-            
+        Initialises the object. 
         '''
 
-        self.gametype_defs = {
+        # create object for the interface
+        # this is overwritten by `gui.py`, so we do not do anything here
+        self.InterfaceObj = None
+
+        # setup constant attributes
+        self.GAMETYPES = {
             'cpu': ['player_turn', 'cpu_turn'],
             'splitscreen': ['player_turn','player_turn'],
             'alternate': ['player_turn', 'player_turn']
         }
-        
-        self.gametype = self.gametype_defs[gametype]
-        print(self.gametype)
 
-        self.board = (
-            (int, int, int),
-            (int, int, int),
-            (int, int, int)
-        )
+        # define a blank board
+        # a value of 0 represents a blank tile
+        # a value of 1 represents player1's selections, or a nought
+        # a value of -1 represents player2's selections, or a cross
+        self.board = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+
+        # set current gametype
+        self.cur_game = self.GAMETYPES[gametype]
 
         return
 
@@ -80,11 +89,13 @@ class Game:
         '''
 
         while True:
-            for i in range(len(self.gametype)):
-                match self.gametype[i]:
+            for i in range(len(self.cur_game)):
+                match self.cur_game[i]:
                     case 'player_turn':
                         self.player_turn(i)
+                        self.InterfaceObj.draw_board()
                     case 'cpu_turn':
                         self.cpu_turn(i)
+                        self.InterfaceObj.draw_board()
         
         return
