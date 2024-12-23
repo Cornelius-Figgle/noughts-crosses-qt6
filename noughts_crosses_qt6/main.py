@@ -22,12 +22,19 @@ __credits__ = ['Max Harrison']
 # source: https://github.com/Cornelius-Figgle/noughts-crosses-qt6
 
 
+from typing import Literal
+
+
 class Game:
     '''
     Main progam logic.
     '''
 
-    def __init__(self, gametype: Literal[str] = 'cpu') -> None:
+    def __init__(
+            self,
+            gametype: Literal['cpu', '2pl'] = 'cpu'
+        ) -> None:
+
         '''
         Initialises the object. 
         '''
@@ -39,8 +46,7 @@ class Game:
         # setup constant attributes
         self.GAMETYPES = {
             'cpu': ['player_turn', 'cpu_turn'],
-            'splitscreen': ['player_turn','player_turn'],
-            'alternate': ['player_turn', 'player_turn']
+            '2pl': ['player_turn', 'player_turn']
         }
 
         # define a blank board

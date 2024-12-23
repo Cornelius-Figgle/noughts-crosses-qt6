@@ -98,9 +98,12 @@ class GUI_Interface(QMainWindow):
                 # since we can set `QFrame` styling options on `QLabel`s
                 # which you can't do on a `QPushButton`
                 psuedo_button = QLabel(str(self.GameObj.board[y][x]))
-                psuedo_button.setFrameStyle(QFrame.Shape.Panel | QFrame.Shadow.Raised)
+                psuedo_button.setFrameStyle(
+                    QFrame.Shape.Panel | QFrame.Shadow.Raised
+                )
                 psuedo_button.setLineWidth(2)
-                psuedo_button.mousePressEvent = lambda event, pos=(x,y): self.update_board(pos)
+                psuedo_button.mousePressEvent = lambda event, pos=(x,y): \
+                    self.update_board(pos)
 
                 # add the tile to the board layout
                 self.board_layout.addWidget(psuedo_button,y,x)
