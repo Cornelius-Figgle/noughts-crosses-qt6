@@ -16,6 +16,7 @@ __credits__ = ['Max Harrison']
 # source code: https://github.com/Cornelius-Figgle/noughts-crosses-qt6
 
 
+from random import choice
 from typing import Literal
 
 
@@ -75,6 +76,9 @@ class Game:
                     if self.board[pos[1]][pos[0]] == 0:
                         # update board
                         self.board[pos[1]][pos[0]] = self.cur_player
+
+                        # check if the player has made a winning move
+                        print(self.check_win())
                     else:
                         # inform user of invalid move and exit
                         # so that they can select another tile
@@ -84,6 +88,9 @@ class Game:
                         break
                 case 'cpu_turn':
                     self.cpu_turn()
+
+                    # check if the cpu has made a winning move
+                    self.check_win()
                 
             # redraw board
             self.InterfaceObj.draw_board()
@@ -112,15 +119,62 @@ class Game:
         Takes a go as the cpu 'player'.  
         '''
 
-        ...
+        possible_options = list()
 
+        for x in range(len(self.board[0])):
+            for y in range(len(self.board)):
+                if self.board[y][x] == 0:
+                    possible_options.append((x,y))
+
+        chosen_tile = choice(possible_options)
+        
+        self.board[chosen_tile[1]][chosen_tile[0]] = self.cur_player
+        
         return
     
-    def check_win(self) -> None:
+    def check_win(self) -> bool:
         '''
-            
+        Checks if a player has made a winning move.
         '''
 
-        ...  # TODO: `QMessageBox`
+        # check for horizontal wins
+        for row in self.board:
+            for tile in row:
+                if tile != self.cur_player:
+                    break
+            else:
+                return True
 
-        return
+        # check for vetical wins
+        for x in range(len(self.board[0])):
+            for row in self.board:
+                if row[x] != self.cur_player:
+                    break
+            else:
+                return True
+
+        # check for TL-BR diagonal wins
+        for y in range(len(self.board)):
+            for x in range(len(self.board[0])):
+                if x == y:
+                    if self.board[y][x] != self.cur_player:
+                        break
+            else:
+                continue
+            break  # break break
+        else:
+            return True
+
+        # check for TR-BL diagonal wins
+        for y in range(len(self.board)):
+            for x in range(len(self.board[0])):
+                if x == len(self.board[0])-y-1:
+                    if self.board[y][x] != self.cur_player:
+                        break
+            else:
+                continue
+            break  # (break)^2
+        else:
+            return True
+
+        return False

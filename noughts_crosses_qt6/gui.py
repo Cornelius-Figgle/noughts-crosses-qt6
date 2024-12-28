@@ -117,6 +117,7 @@ class GUI_Interface(QMainWindow):
 
         return
 
+
 def main() -> None:
     '''
     Controls the main program flow.
