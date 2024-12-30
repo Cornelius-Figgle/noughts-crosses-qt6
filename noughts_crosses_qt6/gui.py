@@ -109,11 +109,11 @@ class GUI_Interface(QMainWindow):
                         )
                     case 1:
                         psuedo_button.setPixmap(
-                            qta.icon('fa5.circle').pixmap(QSize(128,128))
+                            qta.icon('msc.circle-large').pixmap(QSize(128,128))
                         )
                     case 2:
                         psuedo_button.setPixmap(
-                            qta.icon('fa5s.times').pixmap(QSize(128,128))
+                            qta.icon('msc.chrome-close').pixmap(QSize(128,128))
                         )
 
                 psuedo_button.setFrameStyle(
