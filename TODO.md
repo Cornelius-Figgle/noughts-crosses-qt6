@@ -4,7 +4,7 @@
 
 ## General
 
-- [ ] Set symbols/images on buttons for board panels
+- [x] Set symbols/images on buttons for board panels
 - [x] Make panel buttons do stuff
 - [ ] Implement cpu turn logic
 - [x] Implement win identification logic
@@ -15,6 +15,7 @@
 - [x] Annotate `take_turn()`
 - [x] `QMessageBox` to announce wins and invalid moves
 - [ ] Create home/landing page
+- [ ] Handle draws (cpu & 2pl)
 
 ## Ana's requirements
 

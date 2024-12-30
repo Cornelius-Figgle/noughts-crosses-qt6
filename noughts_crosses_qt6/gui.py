@@ -18,6 +18,8 @@ __credits__ = ['Max Harrison']
 
 import sys
 
+import qtawesome as qta
+from PyQt6.QtCore import QSize
 from PyQt6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -99,11 +101,26 @@ class GUI_Interface(QMainWindow):
                 # use a clickable `QLabel` for each tile
                 # since we can set `QFrame` styling options on `QLabel`s
                 # which you can't do on a `QPushButton`
-                psuedo_button = QLabel(str(self.GameObj.board[y][x]))
+                psuedo_button = QLabel()
+                match self.GameObj.board[y][x]:
+                    case 0:
+                        psuedo_button.setPixmap(
+                            qta.icon('msc.blank').pixmap(QSize(128,128))
+                        )
+                    case 1:
+                        psuedo_button.setPixmap(
+                            qta.icon('fa5.circle').pixmap(QSize(128,128))
+                        )
+                    case 2:
+                        psuedo_button.setPixmap(
+                            qta.icon('fa5s.times').pixmap(QSize(128,128))
+                        )
+
                 psuedo_button.setFrameStyle(
                     QFrame.Shape.Panel | QFrame.Shadow.Raised
                 )
                 psuedo_button.setLineWidth(2)
+                psuedo_button.setScaledContents(True)
                 psuedo_button.mousePressEvent = lambda event, pos=(x,y): \
                     self.GameObj.take_turn(pos)
 
