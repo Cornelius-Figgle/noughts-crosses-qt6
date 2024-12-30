@@ -38,7 +38,7 @@ class GUI_Interface(QMainWindow):
     information from, the user in a consistant and modular way. 
     '''
 
-    def __init__(self) -> None:
+    def __init__(self, _AppObj: type[QApplication]) -> None:
         '''
         Sets up the gui and handles the main program loop after exec is
         handed over.
@@ -48,8 +48,11 @@ class GUI_Interface(QMainWindow):
         super().__init__()
 
         # initialise object
-        self.GameObj = Game('cpu')
-        self.GameObj.InterfaceObj = self
+        self.GameObj = Game(self)
+        self.GameObj.setup_game('cpu')
+
+        # stores the QApplication object for later use in `_quit()`
+        self.AppObj = _AppObj
 
         # creates a widget to hold our layout
         self.layout_widget = QWidget()
@@ -61,6 +64,15 @@ class GUI_Interface(QMainWindow):
 
         # draws our initial board to the screen
         self.draw_board()
+
+        return
+
+    def _quit(self) -> None:
+        '''
+        Gracefully exits the application.
+        '''
+
+        self.AppObj.quit()
 
         return
 
@@ -128,8 +140,8 @@ class GUI_Interface(QMainWindow):
         # pop-up window
         choice = QMessageBox.question(
             self,
-            f'Player {self.GameObj.cur_player} has won!',
-            f'Player {self.GameObj.cur_player} has won!\n'
+            f'Player {self.GameObj.current_player} has won!',
+            f'Player {self.GameObj.current_player} has won!\n'
                 +'Would you like to play again?'
         )
 
@@ -163,7 +175,7 @@ def main() -> None:
 
     # creates the window
     AppObj = QApplication([])
-    WindowObj = GUI_Interface()
+    WindowObj = GUI_Interface(AppObj)
     WindowObj.show()
 
     # hands control of the program flow over to PyQt

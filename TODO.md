@@ -8,12 +8,13 @@
 - [x] Make panel buttons do stuff
 - [ ] Implement cpu turn logic
 - [x] Implement win identification logic
-- [ ] Handle wins
+- [x] Handle wins
 - [ ] Player names/scores etc on LHS & RHS
   - [ ] `QFrame` around current player(?)
 - [x] Annotate `draw_board()`
 - [x] Annotate `take_turn()`
 - [x] `QMessageBox` to announce wins and invalid moves
+- [ ] Create home/landing page
 
 ## Ana's requirements
 
