@@ -15,7 +15,8 @@
 - [x] Annotate `take_turn()`
 - [x] `QMessageBox` to announce wins and invalid moves
 - [ ] Create home/landing page
-- [ ] Handle draws (cpu & 2pl)
+- [x] Handle draws (cpu & 2pl)
+- [ ] Add delay before cpu takes turn
 
 ## Ana's requirements
 

@@ -51,7 +51,7 @@ class GUI_Interface(QMainWindow):
 
         # initialise object
         self.GameObj = Game(self)
-        self.GameObj.setup_game('cpu')
+        self.GameObj.setup_game('2pl')
 
         # stores the QApplication object for later use in `_quit()`
         self.AppObj = _AppObj
@@ -148,19 +148,28 @@ class GUI_Interface(QMainWindow):
 
         return
 
-    def inform_win(self) -> True | False:
+    def inform_win(self, win_state: str) -> True | False:
         '''
-        Creates a dialog window to inform the user of who has won and to
-        ask what to do next.
+        Creates a dialog window to inform the user of who has won or if
+        there was a draw and to ask what to do next.
         '''
 
         # pop-up window
-        choice = QMessageBox.question(
-            self,
-            f'Player {self.GameObj.current_player} has won!',
-            f'Player {self.GameObj.current_player} has won!\n'
-                +'Would you like to play again?'
-        )
+        match win_state:
+            case 'win':
+                choice = QMessageBox.question(
+                    self,
+                    f'Player {self.GameObj.current_player} has won!',
+                    f'Player {self.GameObj.current_player} has won!\n'
+                        +'Would you like to play again?'
+                )
+            case 'draw':
+                choice = QMessageBox.question(
+                    self,
+                    'There is a draw!',
+                    'There is a draw!\n'
+                        +'Would you like to play again?'
+                )
 
         # convert values to a normal `bool`
         match choice:

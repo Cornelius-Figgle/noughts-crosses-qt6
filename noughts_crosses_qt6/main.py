@@ -17,6 +17,7 @@ __credits__ = ['Max Harrison']
 
 
 from random import choice
+from time import sleep
 from typing import Literal
 
 
@@ -92,9 +93,10 @@ class Game:
             self.InterfaceObj.draw_board()
 
             # check if the player or cpu has made a winning move
-            if self.check_win():
+            win_state = self.check_win()
+            if win_state != 'none':
                 # let the user know and prompt for what next
-                if self.InterfaceObj.inform_win():
+                if self.InterfaceObj.inform_win(win_state):
                     # if they wish to replay, resetup the game variables
                     self.setup_game(self.gametype)
                     # and redraw the new board
@@ -140,7 +142,7 @@ class Game:
         
         return
     
-    def check_win(self) -> bool:
+    def check_win(self) -> Literal['none', 'win', 'draw']:
         '''
         Checks if a player has made a winning move.
         '''
@@ -151,7 +153,7 @@ class Game:
                 if tile != self.current_player:
                     break
             else:
-                return True
+                return 'win'
 
         # check for vetical wins
         for x in range(len(self.board[0])):
@@ -159,7 +161,7 @@ class Game:
                 if row[x] != self.current_player:
                     break
             else:
-                return True
+                return 'win'
 
         # check for TL-BR diagonal wins
         for y in range(len(self.board)):
@@ -171,7 +173,7 @@ class Game:
                 continue
             break  # break break
         else:
-            return True
+            return 'win'
 
         # check for TR-BL diagonal wins
         for y in range(len(self.board)):
@@ -181,8 +183,19 @@ class Game:
                         break
             else:
                 continue
-            break  # (break)^2
+            break  # break break
         else:
-            return True
+            return 'win'
 
-        return False
+        # check if all tiles are filled without a win (draw)
+        for x in range(len(self.board[0])):
+            for y in range(len(self.board)):
+                if self.board[y][x] == 0:
+                    break
+            else:
+                continue
+            break  # break break
+        else:
+            return 'draw'
+
+        return 'none'
