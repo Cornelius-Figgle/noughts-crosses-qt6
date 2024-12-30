@@ -76,24 +76,24 @@ class Game:
                     if self.board[pos[1]][pos[0]] == 0:
                         # update board
                         self.board[pos[1]][pos[0]] = self.cur_player
-
-                        # check if the player has made a winning move
-                        print(self.check_win())
                     else:
                         # inform user of invalid move and exit
                         # so that they can select another tile
-
-                        ...  # TODO: `QMessageBox`
-                        
+                        self.InterfaceObj.inform_invalid('move')
                         break
                 case 'cpu_turn':
                     self.cpu_turn()
 
-                    # check if the cpu has made a winning move
-                    self.check_win()
-                
             # redraw board
             self.InterfaceObj.draw_board()
+
+            # check if the player or cpu has made a winning move
+            if self.check_win():
+                # let the user know and prompt for what next
+                if self.InterfaceObj.inform_win():
+                    ...
+                else:
+                    ...
 
             # next player
             self.cur_player += 1

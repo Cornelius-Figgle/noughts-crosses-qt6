@@ -106,7 +106,9 @@ class GUI_Interface(QMainWindow):
         self.board_widget.setLayout(self.board_layout)
 
         # style the board widget
-        self.board_widget.setFrameStyle(QFrame.Shape.Panel | QFrame.Shadow.Sunken)
+        self.board_widget.setFrameStyle(
+            QFrame.Shape.Panel | QFrame.Shadow.Sunken
+        )
         self.board_widget.setLineWidth(2)
 
         # add the widget to window's layout
@@ -114,6 +116,42 @@ class GUI_Interface(QMainWindow):
 
         # set the layout
         self.layout_widget.setLayout(self.layout_current)
+
+        return
+
+    def inform_win(self) -> True | False:
+        '''
+        Creates a dialog window to inform the user of who has won and to
+        ask what to do next.
+        '''
+
+        # pop-up window
+        choice = QMessageBox.question(
+            self,
+            f'Player {self.GameObj.cur_player} has won!',
+            f'Player {self.GameObj.cur_player} has won!\n'
+                +'Would you like to play again?'
+        )
+
+        # convert values to a normal `bool`
+        match choice:
+            case QMessageBox.StandardButton.Yes:
+                return True
+            case QMessageBox.StandardButton.No:
+                return False
+
+    def inform_invalid(self, op: str) -> None:
+        '''
+        Informs the user of an invalid operation, `op`.
+        '''
+
+        # pop-up window
+        # future: add a message across the bottom of the window instead
+        QMessageBox.information(
+            self,
+            'Invalid Operation',
+            f'Invalid {op}.'            
+        )
 
         return
 
