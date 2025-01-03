@@ -151,6 +151,7 @@ class GUI_Interface(QMainWindow):
                             qta.icon('msc.chrome-close').pixmap(QSize(128,128))
                         )
 
+                # sets options for our 'button'
                 psuedo_button.setFrameStyle(
                     QFrame.Shape.Panel | QFrame.Shadow.Raised
                 )

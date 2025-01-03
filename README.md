@@ -10,3 +10,4 @@ Project for my college course.
 ## Sources Used
 
 - [PythonGUIs PyQt6 Basic Tutorial](https://www.pythonguis.com/pyqt6-tutorial/)
+- [Python Type Hints Specification](https://docs.python.org/3/library/typing.html)
