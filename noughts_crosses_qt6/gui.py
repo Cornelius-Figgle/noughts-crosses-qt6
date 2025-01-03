@@ -83,12 +83,35 @@ class GUI_Interface(QMainWindow):
 
         return
 
-    def _delay(self, length: int, func: Callable[[], Any]) -> Any:
+    def _delay(self, length: int, func: Callable[[], Any]) -> None:
         '''
         Waits a fixed amount of time before running the function.
         '''
 
-        return QTimer.singleShot(length, func)
+        # creates a timer that runs once when the time expires
+        self.delay_timer = QTimer()
+        self.delay_timer.setSingleShot(True)
+        self.delay_timer.timeout.connect(func)
+
+        # starts the timer
+        self.delay_timer.start(length)
+
+        return
+
+    def _event(self, func: Callable[[...], Any], args: list[...]) -> None:
+        '''
+        Handles user input events.
+        '''
+
+        # test if a timer exists
+        try:
+            # test is the timer is active
+            if not self.delay_timer.isActive():
+                func(*args)        
+        except AttributeError:
+            func(*args)        
+        
+        return
 
     def draw_board(self) -> None:
         '''
@@ -134,7 +157,7 @@ class GUI_Interface(QMainWindow):
                 psuedo_button.setLineWidth(2)
                 psuedo_button.setScaledContents(True)
                 psuedo_button.mousePressEvent = lambda event, pos=(x,y): \
-                    self.GameObj.take_turn(pos)
+                    self._event(self.GameObj.take_turn, [pos])
 
                 # add the tile to the board layout
                 self.board_layout.addWidget(psuedo_button,y,x)
