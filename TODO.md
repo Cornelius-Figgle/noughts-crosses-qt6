@@ -16,7 +16,7 @@
 - [x] `QMessageBox` to announce wins and invalid moves
 - [ ] Create home/landing page
 - [x] Handle draws (cpu & 2pl)
-- [ ] Add delay before cpu takes turn
+- [x] Add delay before cpu takes turn
 
 ## Ana's requirements
 

@@ -17,7 +17,6 @@ __credits__ = ['Max Harrison']
 
 
 from random import choice
-from time import sleep
 from typing import Literal
 
 
@@ -81,16 +80,21 @@ class Game:
                     if self.board[pos[1]][pos[0]] == 0:
                         # update board
                         self.board[pos[1]][pos[0]] = self.current_player
+                        # redraw board
+                        self.InterfaceObj.draw_board()
                     else:
                         # inform user of invalid move and exit
                         # so that they can select another tile
                         self.InterfaceObj.inform_invalid('move')
                         break
                 case 'cpu_turn':
+                    # take turn as cpu
                     self.cpu_turn()
-
-            # redraw board
-            self.InterfaceObj.draw_board()
+                    # redraw board after delay
+                    self.InterfaceObj._delay(
+                        1000,
+                        self.InterfaceObj.draw_board
+                    )
 
             # check if the player or cpu has made a winning move
             win_state = self.check_win()

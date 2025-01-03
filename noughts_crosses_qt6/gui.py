@@ -17,9 +17,11 @@ __credits__ = ['Max Harrison']
 
 
 import sys
+from collections.abc import Callable
+from typing import Any
 
 import qtawesome as qta
-from PyQt6.QtCore import QSize
+from PyQt6.QtCore import QSize, QTimer
 from PyQt6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -51,10 +53,13 @@ class GUI_Interface(QMainWindow):
 
         # initialise object
         self.GameObj = Game(self)
-        self.GameObj.setup_game('2pl')
+        self.GameObj.setup_game('cpu')
 
         # stores the QApplication object for later use in `_quit()`
         self.AppObj = _AppObj
+
+        # sets title
+        self.setWindowTitle('Noughts & Crosses Qt6')
 
         # creates a widget to hold our layout
         self.layout_widget = QWidget()
@@ -77,6 +82,13 @@ class GUI_Interface(QMainWindow):
         self.AppObj.quit()
 
         return
+
+    def _delay(self, length: int, func: Callable[[], Any]) -> Any:
+        '''
+        Waits a fixed amount of time before running the function.
+        '''
+
+        return QTimer.singleShot(length, func)
 
     def draw_board(self) -> None:
         '''
