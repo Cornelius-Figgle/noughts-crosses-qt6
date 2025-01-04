@@ -18,6 +18,7 @@
 - [x] Handle draws (cpu & 2pl)
 - [x] Add delay before cpu takes turn
 - [x] Don't allow player input whilst cpu is taking go
+- [ ] Make icons sunken into tiles
 
 ## Ana's requirements
 

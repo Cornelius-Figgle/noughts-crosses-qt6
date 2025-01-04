@@ -35,15 +35,41 @@ class Game:
         # so we do not do anything here
         self.InterfaceObj = _InterfaceObj
 
-        # setup constant attributes
+        # setup gametype definitions
         self.GAMETYPES = {
-            'cpu': ['player_turn', 'cpu_turn'],
-            '2pl': ['player_turn', 'player_turn']
+            'cpu': [
+                {
+                    'name': 'Player1',
+                    'type': 'player_turn',
+                    'id': 1,
+                    'score': 0
+                },
+                {
+                    'name': 'CPU1',
+                    'type': 'cpu_turn',
+                    'id': 2,
+                    'score': 0
+                }
+            ],
+            '2pl': [
+                {
+                    'name': 'Player1',
+                    'type': 'player_turn',
+                    'id': 1,
+                    'score': 0
+                },
+                {
+                    'name': 'Player2',
+                    'type': 'player_turn',
+                    'id': 2,
+                    'score': 0
+                }
+            ]
         }
 
         return
 
-    def setup_game(self, _gametype: Literal['cpu', '2pl'] = 'cpu') -> None:
+    def setup_game(self, gametype: Literal['cpu', '2pl'] = None) -> None:
         '''
         Sets the default variables for the game.
         '''
@@ -57,8 +83,9 @@ class Game:
             [0, 0, 0]
         ]
 
-        # set current game settings
-        self.gametype = _gametype
+        # reset current game settings
+        if gametype:
+            self.current_game = self.GAMETYPES[gametype]
         self.current_player = 1
 
         return
@@ -74,7 +101,7 @@ class Game:
         while True:
             # either update the board to reflect the user's input
             # or let the cpu 'player' take its turn
-            match self.GAMETYPES[self.gametype][self.current_player - 1]:
+            match self.current_game[self.current_player - 1]['type']:
                 case 'player_turn':
                     # check if selected tile is empty
                     if self.board[pos[1]][pos[0]] == 0:
@@ -102,7 +129,7 @@ class Game:
                 # let the user know and prompt for what next
                 if self.InterfaceObj.inform_win(win_state):
                     # if they wish to replay, resetup the game variables
-                    self.setup_game(self.gametype)
+                    self.setup_game()
                     # and redraw the new board
                     self.InterfaceObj.draw_board()
                 else:
@@ -113,12 +140,12 @@ class Game:
                 self.current_player += 1
 
                 # reset player count if all players have had their turn
-                if self.current_player > len(self.GAMETYPES[self.gametype]):
+                if self.current_player > len(self.current_game):
                     self.current_player = 1
 
             # if next player is the cpu then loop
             # if next player is the user then exit and wait for input
-            match self.GAMETYPES[self.gametype][self.current_player - 1]:
+            match self.current_game[self.current_player - 1]['type']:
                 case 'player_turn':
                     # break and wait for user input
                     break
@@ -157,6 +184,7 @@ class Game:
                 if tile != self.current_player:
                     break
             else:
+                self.current_game[self.current_player - 1]['score'] += 3
                 return 'win'
 
         # check for vetical wins
@@ -165,6 +193,7 @@ class Game:
                 if row[x] != self.current_player:
                     break
             else:
+                self.current_game[self.current_player - 1]['score'] += 3
                 return 'win'
 
         # check for TL-BR diagonal wins
@@ -177,6 +206,7 @@ class Game:
                 continue
             break  # break break
         else:
+            self.current_game[self.current_player - 1]['score'] += 3
             return 'win'
 
         # check for TR-BL diagonal wins
@@ -189,6 +219,7 @@ class Game:
                 continue
             break  # break break
         else:
+            self.current_game[self.current_player - 1]['score'] += 3
             return 'win'
 
         # check if all tiles are filled without a win (draw)
@@ -200,6 +231,8 @@ class Game:
                 continue
             break  # break break
         else:
+            for player in self.current_game:
+                player['score'] += 1
             return 'draw'
 
         return 'none'

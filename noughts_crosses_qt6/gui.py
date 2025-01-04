@@ -26,6 +26,7 @@ from PyQt6.QtWidgets import (
     QApplication,
     QMainWindow,
     QGridLayout,
+    QVBoxLayout,
     QWidget,
     QLabel,
     QPushButton,
@@ -53,7 +54,7 @@ class GUI_Interface(QMainWindow):
 
         # initialise object
         self.GameObj = Game(self)
-        self.GameObj.setup_game('cpu')
+        self.GameObj.setup_game(gametype='2pl')
 
         # stores the QApplication object for later use in `_quit()`
         self.AppObj = _AppObj
@@ -113,6 +114,72 @@ class GUI_Interface(QMainWindow):
         
         return
 
+    def draw_info(self) -> None:
+        '''
+        Draws the info tiles to the window.
+        '''
+
+        # remove existing info to redraw (if it exists)
+        try:
+            self.layout_current.removeWidget(self.info_widget)
+        except AttributeError:
+            pass
+
+        # create a widget to hold the info's layout
+        self.info_widget = QFrame()
+        
+        # create a layout to hold the tiles of the info
+        self.info_layout = QVBoxLayout()
+
+        # add tiles for each player
+        for player in self.GameObj.current_game:
+            # create a frame for the player's layout
+            player_widget = QFrame()
+
+            # create a layout
+            player_layout = QGridLayout()
+
+            # create tiles for the info
+            player_tiles = dict()
+            player_tiles['id'] = QLabel(str(player['id']))
+            player_tiles['name'] = QLabel(player['name'])
+            player_tiles['score'] = QLabel('SCORE: '+str(player['score']))
+
+            # set options for the tiles
+            for key in player_tiles:
+                player_tiles[key].setFrameStyle(
+                    QFrame.Shape.Panel | QFrame.Shadow.Raised
+                )
+                player_tiles[key].setLineWidth(4)
+
+            # add these to our player's layout
+            player_layout.addWidget(player_tiles['id'], 0, 0)
+            player_layout.addWidget(player_tiles['name'], 0, 1)
+            player_layout.addWidget(player_tiles['score'], 1, 0, 1, 2)
+
+            # set the layout containing the tiles onto the frame
+            player_widget.setLayout(player_layout)
+            
+            # sets options for the tile
+            player_widget.setFrameStyle(
+                QFrame.Shape.Panel | QFrame.Shadow.Sunken 
+            )
+            player_widget.setLineWidth(4)
+
+            # add the tile to the board layout
+            self.info_layout.addWidget(player_widget)
+
+        # set the layout containing the tiles onto the info widget
+        self.info_widget.setLayout(self.info_layout)
+
+        # add the widget to window's layout
+        self.layout_current.addWidget(self.info_widget, 0, 0)
+
+        # set the layout
+        self.layout_widget.setLayout(self.layout_current)
+
+        return
+
     def draw_board(self) -> None:
         '''
         Draws the board and its tiles to the window.
@@ -155,7 +222,7 @@ class GUI_Interface(QMainWindow):
                 psuedo_button.setFrameStyle(
                     QFrame.Shape.Panel | QFrame.Shadow.Raised
                 )
-                psuedo_button.setLineWidth(2)
+                psuedo_button.setLineWidth(4)
                 psuedo_button.setScaledContents(True)
                 psuedo_button.mousePressEvent = lambda event, pos=(x,y): \
                     self._event(self.GameObj.take_turn, [pos])
@@ -163,24 +230,23 @@ class GUI_Interface(QMainWindow):
                 # add the tile to the board layout
                 self.board_layout.addWidget(psuedo_button,y,x)
 
-                # remove the tile variable from memory
-                # not necessarily needed as we reinitialise next anyway
-                del psuedo_button
-
-        # set the layout container the tiles onto the board widget
+        # set the layout containing the tiles onto the board widget
         self.board_widget.setLayout(self.board_layout)
 
         # style the board widget
         self.board_widget.setFrameStyle(
             QFrame.Shape.Panel | QFrame.Shadow.Sunken
         )
-        self.board_widget.setLineWidth(2)
+        self.board_widget.setLineWidth(4)
 
         # add the widget to window's layout
-        self.layout_current.addWidget(self.board_widget, 1, 1)
+        self.layout_current.addWidget(self.board_widget, 0, 1)
 
         # set the layout
         self.layout_widget.setLayout(self.layout_current)
+
+        # draw info panels to match the updated board
+        self.draw_info()
 
         return
 
@@ -195,16 +261,16 @@ class GUI_Interface(QMainWindow):
             case 'win':
                 choice = QMessageBox.question(
                     self,
-                    f'Player {self.GameObj.current_player} has won!',
-                    f'Player {self.GameObj.current_player} has won!\n'
-                        +'Would you like to play again?'
+                    self.GameObj.current_game[self.GameObj.current_player - 1]['name']
+                        +'has won!',
+                    self.GameObj.current_game[self.GameObj.current_player - 1]['name']
+                        +'has won!\nWould you like to play again?'
                 )
             case 'draw':
                 choice = QMessageBox.question(
                     self,
                     'There is a draw!',
-                    'There is a draw!\n'
-                        +'Would you like to play again?'
+                    'There is a draw!\nWould you like to play again?'
                 )
 
         # convert values to a normal `bool`
