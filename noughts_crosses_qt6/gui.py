@@ -26,7 +26,7 @@ from PyQt6.QtWidgets import (
     QApplication,
     QMainWindow,
     QGridLayout,
-    QVBoxLayout,
+    QHBoxLayout,
     QWidget,
     QLabel,
     QPushButton,
@@ -54,7 +54,7 @@ class GUI_Interface(QMainWindow):
 
         # initialise object
         self.GameObj = Game(self)
-        self.GameObj.setup_game(gametype='2pl')
+        self.GameObj.setup_game(gametype='cpu')
 
         # stores the QApplication object for later use in `_quit()`
         self.AppObj = _AppObj
@@ -129,48 +129,40 @@ class GUI_Interface(QMainWindow):
         self.info_widget = QFrame()
         
         # create a layout to hold the tiles of the info
-        self.info_layout = QVBoxLayout()
+        self.info_layout = QHBoxLayout()
 
-        # add tiles for each player
-        for player in self.GameObj.current_game:
-            # create a frame for the player's layout
-            player_widget = QFrame()
+        # create widget for first player's score
+        score_widget_1 = QLabel(
+            str(self.GameObj.current_game[0]['score']).zfill(3)
+        )
+        score_widget_1.setFrameStyle(
+            QFrame.Shape.Panel | QFrame.Shadow.Raised 
+        )
+        score_widget_1.setLineWidth(4)
+        self.info_layout.addWidget(score_widget_1)
 
-            # create a layout
-            player_layout = QGridLayout()
+        # create widget for title
+        title_widget = QLabel('<h1>Noughts & Crosses Qt6</h1>')
+        self.info_layout.addWidget(title_widget)
 
-            # create tiles for the info
-            player_tiles = dict()
-            player_tiles['id'] = QLabel(str(player['id']))
-            player_tiles['name'] = QLabel(player['name'])
-            player_tiles['score'] = QLabel('SCORE: '+str(player['score']))
-
-            # set options for the tiles
-            for key in player_tiles:
-                player_tiles[key].setFrameStyle(
-                    QFrame.Shape.Panel | QFrame.Shadow.Raised
-                )
-                player_tiles[key].setLineWidth(4)
-
-            # add these to our player's layout
-            player_layout.addWidget(player_tiles['id'], 0, 0)
-            player_layout.addWidget(player_tiles['name'], 0, 1)
-            player_layout.addWidget(player_tiles['score'], 1, 0, 1, 2)
-
-            # set the layout containing the tiles onto the frame
-            player_widget.setLayout(player_layout)
-            
-            # sets options for the tile
-            player_widget.setFrameStyle(
-                QFrame.Shape.Panel | QFrame.Shadow.Sunken 
-            )
-            player_widget.setLineWidth(4)
-
-            # add the tile to the board layout
-            self.info_layout.addWidget(player_widget)
+        # create widget for second player's score
+        score_widget_2 = QLabel(
+            str(self.GameObj.current_game[1]['score']).zfill(3)
+        )
+        score_widget_2.setFrameStyle(
+            QFrame.Shape.Panel | QFrame.Shadow.Raised 
+        )
+        score_widget_2.setLineWidth(4)
+        self.info_layout.addWidget(score_widget_2)
 
         # set the layout containing the tiles onto the info widget
         self.info_widget.setLayout(self.info_layout)
+
+        # set options for the frame        
+        self.info_widget.setFrameStyle(
+            QFrame.Shape.Panel | QFrame.Shadow.Sunken 
+        )
+        self.info_widget.setLineWidth(4)
 
         # add the widget to window's layout
         self.layout_current.addWidget(self.info_widget, 0, 0)
@@ -240,7 +232,7 @@ class GUI_Interface(QMainWindow):
         self.board_widget.setLineWidth(4)
 
         # add the widget to window's layout
-        self.layout_current.addWidget(self.board_widget, 0, 1)
+        self.layout_current.addWidget(self.board_widget, 1, 0)
 
         # set the layout
         self.layout_widget.setLayout(self.layout_current)
@@ -256,21 +248,28 @@ class GUI_Interface(QMainWindow):
         there was a draw and to ask what to do next.
         '''
 
+        # get the winning player's name
+        win_player_name = self.GameObj.current_game[
+            self.GameObj.current_player - 1
+        ][
+            'name'
+        ]
+
         # pop-up window
         match win_state:
             case 'win':
                 choice = QMessageBox.question(
                     self,
-                    self.GameObj.current_game[self.GameObj.current_player - 1]['name']
-                        +'has won!',
-                    self.GameObj.current_game[self.GameObj.current_player - 1]['name']
-                        +'has won!\nWould you like to play again?'
+                    f'{win_player_name} has won!',
+                    f'{win_player_name} has won!\n'
+                        +'Would you like to play again?'
                 )
             case 'draw':
                 choice = QMessageBox.question(
                     self,
                     'There is a draw!',
-                    'There is a draw!\nWould you like to play again?'
+                    'There is a draw!\n'
+                        +'Would you like to play again?'
                 )
 
         # convert values to a normal `bool`
