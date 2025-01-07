@@ -1,7 +1,7 @@
 #!/usr/bin/env python3 
 
 '''
-# Noughts & Crosses Project (PYQT6)
+# Noughts & Crosses Project (PyQt6)
 '''
 
 __version__ = '1.0.0'  

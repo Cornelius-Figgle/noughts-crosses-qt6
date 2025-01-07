@@ -1,4 +1,4 @@
-# Noughts & Crosses Project (PYQT6)
+# Noughts & Crosses Project (PyQt6)
 
 Project for my college course.
 
