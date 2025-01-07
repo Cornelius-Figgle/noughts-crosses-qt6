@@ -30,8 +30,6 @@ class Game:
         '''
 
         # create object for the interface
-        # this is overwritten by `gui.InterfaceObj`
-        # so we do not do anything here
         self.InterfaceObj = _InterfaceObj
 
         # setup gametype definitions
