@@ -29,7 +29,6 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
     QWidget,
     QLabel,
-    QPushButton,
     QMessageBox,
     QFrame
 )
