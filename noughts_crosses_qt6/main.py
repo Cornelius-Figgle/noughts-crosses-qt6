@@ -16,7 +16,6 @@ __credits__ = ['Max Harrison']
 # source code: https://github.com/Cornelius-Figgle/noughts-crosses-qt6
 
 
-from random import choice
 from typing import Literal
 
 
@@ -74,7 +73,7 @@ class Game:
         Sets the default variables for the game.
         '''
         
-        # define a blank board
+        # define a blank board (this must be 3x3)
         # a value of 0 represents a blank tile
         # a non-zero value represents the player indexed by `GAMETYPES`
         self.board = [
@@ -82,6 +81,9 @@ class Game:
             [0, 0, 0],
             [0, 0, 0]
         ]
+
+        # reset the cpu move tracker
+        self.cpu_moves = list()
 
         # reset current game settings
         if gametype:
@@ -126,6 +128,13 @@ class Game:
             # check if the player or cpu has made a winning move
             win_state = self.check_win()
             if win_state != 'none':
+                # increase scores
+                if win_state == 'win':
+                    self.current_game[self.current_player - 1]['score'] += 3
+                elif win_state == 'draw':
+                    for player in self.current_game:
+                        player['score'] += 1
+
                 # let the user know and prompt for what next
                 if self.InterfaceObj.inform_win(win_state):
                     # if they wish to replay, resetup the game variables
@@ -157,19 +166,160 @@ class Game:
 
     def cpu_turn(self) -> None:
         '''
-        Takes a go as the cpu 'player'.  
+        Takes a go as the cpu 'player'.
+        
+        Algorithm logic adapted from the summary of Paul Curzon and
+        Peter W McOwan's logic on p137 of their book 'The Power of
+        Computational Thinking' provided on www dot advanced-ict dot
+        info. Links to the source can be found in the project README.
         '''
 
-        possible_options = list()
+        def check_opp() -> tuple[int, int] | None:
+            '''
+            Checks if the opponent is one move away from winning so that
+            the cpu can block it.
 
-        for x in range(len(self.board[0])):
-            for y in range(len(self.board)):
-                if self.board[y][x] == 0:
-                    possible_options.append((x,y))
+            Nested function because we have to check this for the second
+            and third/fourth moves. 
+            '''
 
-        chosen_tile = choice(possible_options)
+            # try to fill in the opponent's line
+            opp_id = int(not self.current_player - 1) + 1
+            # check for horizontal lines
+            for row in self.board:
+                if row == [0, opp_id, opp_id]:
+                    return (0, self.board.index(row))
+                elif row == [opp_id, 0, opp_id]:
+                    return (1, self.board.index(row))
+                elif row == [opp_id, opp_id, 0]:
+                    return (2, self.board.index(row))
+            else:
+                # check for vertical lines
+                for x in range(3):
+                    if (self.board[0][x] == 0
+                            and self.board[1][x] == opp_id
+                            and self.board[2][x] == opp_id):
+
+                        return (x, 0)
+                    elif (self.board[0][x] == opp_id
+                            and self.board[1][x] == 0
+                            and self.board[2][x] == opp_id):
+
+                        return (x, 1)
+                    elif (self.board[0][x] == opp_id
+                            and self.board[1][x] == opp_id
+                            and self.board[2][x] == 0):
+
+                        return (x, 2)
+                else:
+                    # check for diagonal lines
+                    if (self.board[0][0] == 0
+                            and self.board[1][1] == opp_id
+                            and self.board[2][2] == opp_id):
+                            
+                        return (0, 0)
+                    elif (self.board[0][2] == 0
+                            and self.board[1][1] == opp_id
+                            and self.board[2][0] == opp_id):
+                            
+                        return (2, 0)
+                    elif ((self.board[0][0] == opp_id
+                            and self.board[1][1] == 0
+                            and self.board[2][2] == opp_id)
+                            # TR:BL
+                            or (self.board[0][2] == opp_id
+                            and self.board[1][1] == 0
+                            and self.board[2][0] == opp_id)):
+
+                        return (1, 1)
+                    elif (self.board[0][0] == opp_id
+                            and self.board[1][1] == opp_id
+                            and self.board[2][2] == 0):
+                            
+                        return (2, 2)
+                    elif (self.board[0][2] == opp_id
+                            and self.board[1][1] == opp_id
+                            and self.board[2][0] == 0):
+                            
+                        return (0, 2)
+                    else: 
+                        return None
+
+        match len(self.cpu_moves):
+            # for the first move, go in a corner
+            case 0:
+                # check TL, else go TR
+                if self.board[0][0] == 0:
+                    selected_tile = (0, 0)
+                else:
+                    selected_tile = (2, 0)
+            # for the second move, try to block the opponent's line,
+            # else go in the opposite corner
+            case 1:
+                # try to fill in the opponent's line
+                selected_tile = check_opp()
+                # if there was no move that needed to be blocked
+                if selected_tile is None:
+                    match self.cpu_moves[0]:
+                        case (0,0):
+                            # check TR, then BL, else go BR
+                            if self.board[0][2] == 0:
+                                selected_tile = (2, 0)
+                            elif self.board[2][0] == 0:
+                                selected_tile = (0, 2)
+                            else:
+                                selected_tile = (2, 2)
+                        case (2,0):
+                            # check BR else BL
+                            # since TL would have already been checked
+                            if self.board[2][2] == 0:
+                                selected_tile = (2, 2)
+                            else:
+                                selected_tile = (0, 2)
+            # for third and fourth move, try to fill our line, else try
+            # to block the opponent's line, else go in another corner
+            case 2 | 3:
+                # try to fill the line we have the corners of
+                middle_of_moves = list()
+                for i in range(len(self.cpu_moves) - 1):
+                    middle_x = int(
+                        (self.cpu_moves[i + 1][0]+self.cpu_moves[i][0])/2
+                    )
+                    middle_y = int(
+                        (self.cpu_moves[i + 1][1]+self.cpu_moves[i][1])/2
+                    )
+                    middle_of_moves.append((middle_x, middle_y))
+                for tile in middle_of_moves:
+                    if self.board[tile[1]][tile[0]] == 0:
+                        selected_tile = (tile[0], tile[1])
+                        break 
+                else:
+                    # try to fill in the opponent's line
+                    selected_tile = check_opp()
+                    # if there was no move that needed to be blocked
+                    if selected_tile is None:
+                        # go in another corner
+                        # check BL, else BR
+                        if self.board[2][0] == 0:
+                            selected_tile = (0, 2)
+                        else:
+                            selected_tile = (2, 2)
+            # for the fifth move, go in the free space
+            # this is only applicable if the cpu is going first
+            case 4:
+                for x in range(3):
+                    for y in range(3):
+                        if self.board[y][x] == 0:
+                            selected_tile = (x,y)
+                            break
+                    else:
+                        continue
+                    break
         
-        self.board[chosen_tile[1]][chosen_tile[0]] = self.current_player
+        self.cpu_moves.append(selected_tile)
+
+         # set our selected tile
+        self.board[selected_tile[1]][selected_tile[0]] = self.current_player
         
         return
     
@@ -184,21 +334,19 @@ class Game:
                 if tile != self.current_player:
                     break
             else:
-                self.current_game[self.current_player - 1]['score'] += 3
                 return 'win'
 
         # check for vetical wins
-        for x in range(len(self.board[0])):
+        for x in range(3):
             for row in self.board:
                 if row[x] != self.current_player:
                     break
             else:
-                self.current_game[self.current_player - 1]['score'] += 3
                 return 'win'
 
         # check for TL-BR diagonal wins
-        for y in range(len(self.board)):
-            for x in range(len(self.board[0])):
+        for y in range(3):
+            for x in range(3):
                 if x == y:
                     if self.board[y][x] != self.current_player:
                         break
@@ -206,33 +354,29 @@ class Game:
                 continue
             break  # break break
         else:
-            self.current_game[self.current_player - 1]['score'] += 3
             return 'win'
 
         # check for TR-BL diagonal wins
-        for y in range(len(self.board)):
-            for x in range(len(self.board[0])):
-                if x == len(self.board[0])-y-1:
+        for y in range(3):
+            for x in range(3):
+                if x == 3 - y - 1:
                     if self.board[y][x] != self.current_player:
                         break
             else:
                 continue
             break  # break break
         else:
-            self.current_game[self.current_player - 1]['score'] += 3
             return 'win'
 
         # check if all tiles are filled without a win (draw)
-        for x in range(len(self.board[0])):
-            for y in range(len(self.board)):
+        for x in range(3):
+            for y in range(3):
                 if self.board[y][x] == 0:
                     break
             else:
                 continue
             break  # break break
         else:
-            for player in self.current_game:
-                player['score'] += 1
             return 'draw'
 
         return 'none'

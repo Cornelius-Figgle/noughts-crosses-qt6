@@ -6,7 +6,7 @@
 
 - [x] Set symbols/images on buttons for board panels
 - [x] Make panel buttons do stuff
-- [ ] Implement cpu turn logic
+- [x] Implement cpu turn logic
 - [x] Implement win identification logic
 - [x] Handle wins
 - [x] Player names/scores etc
@@ -20,11 +20,11 @@
 - [x] Don't allow player input whilst cpu is taking go
 - [ ] Make icons sunken into tiles
 
-## Ana's requirements
+## Assignment requirements
 
 - [x] Draw a board/grid using a data structure of your choice
 - [x] Create a two player game with turns
 - [x] Create a winning function to test if after a turn there is a winner
-- [ ] Create a AI-ish predictive function that has predicted moves to win - in a "you versus the computer" game and have the computer aim to play to win the game
+- [x] Create a AI-ish predictive function that has predicted moves to win - in a "you versus the computer" game and have the computer aim to play to win the game
 - [x] Integrate Pygame/Tkinker to create a window type GUI
 
