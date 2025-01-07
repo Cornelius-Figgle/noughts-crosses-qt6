@@ -39,11 +39,17 @@ poetry run python noughts_crosses_qt6/gui.py
 
 ## External Libraries Used
 
-- qtawesome
-- PyQt6
+- [qtawesome](https://qtawesome.readthedocs.io/en/latest/index.html)
+- [PyQt6](https://www.riverbankcomputing.com/software/pyqt/)
 
 ## Sources Used
 
 - [PythonGUIs PyQt6 Basic Tutorial](https://www.pythonguis.com/pyqt6-tutorial/)
 - [Python Type Hints Specification](https://docs.python.org/3/library/typing.html)
 - [Javascript Noughts and Crosses](https://www.advanced-ict.info/javascript/noughts_and_crosses.html#:~:text=The%20Algorithm)
+
+## License
+
+My code in this project is licensed under the MIT License, as found in the `LICENSE` file. 
+
+Please refer to the linked libraries/sources for other possibly-applicable licenses. 
