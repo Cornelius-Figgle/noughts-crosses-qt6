@@ -21,7 +21,7 @@ from typing import Literal
 
 class Game:
     '''
-    Main progam logic.
+    Main program logic.
     '''
 
     def __init__(self, _InterfaceObj: type['InterfaceObj']) -> None:
