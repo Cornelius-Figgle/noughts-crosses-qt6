@@ -19,6 +19,7 @@
 - [x] Add delay before cpu takes turn
 - [x] Don't allow player input whilst cpu is taking go
 - [ ] Make icons sunken into tiles
+- [ ] Improve CPU ability
 
 ## Assignment requirements
 

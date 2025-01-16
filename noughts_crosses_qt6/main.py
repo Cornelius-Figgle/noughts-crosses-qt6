@@ -172,71 +172,68 @@ class Game:
         info. Links to the source can be found in the project README.
         '''
 
-        def check_opp() -> tuple[int, int] | None:
+        def check_almost_win(id: int) -> tuple[int, int] | None:
             '''
-            Checks if the opponent is one move away from winning so that
-            the cpu can block it.
+            Checks if the player one move away from winning.
 
             Nested function because we have to check this for the second
             and third/fourth moves. 
             '''
 
-            # try to fill in the opponent's line
-            opp_id = int(not self.current_player - 1) + 1
             # check for horizontal lines
             for row in self.board:
-                if row == [0, opp_id, opp_id]:
+                if row == [0, id, id]:
                     return (0, self.board.index(row))
-                elif row == [opp_id, 0, opp_id]:
+                elif row == [id, 0, id]:
                     return (1, self.board.index(row))
-                elif row == [opp_id, opp_id, 0]:
+                elif row == [id, id, 0]:
                     return (2, self.board.index(row))
             else:
                 # check for vertical lines
                 for x in range(3):
                     if (self.board[0][x] == 0
-                            and self.board[1][x] == opp_id
-                            and self.board[2][x] == opp_id):
+                            and self.board[1][x] == id
+                            and self.board[2][x] == id):
 
                         return (x, 0)
-                    elif (self.board[0][x] == opp_id
+                    elif (self.board[0][x] == id
                             and self.board[1][x] == 0
-                            and self.board[2][x] == opp_id):
+                            and self.board[2][x] == id):
 
                         return (x, 1)
-                    elif (self.board[0][x] == opp_id
-                            and self.board[1][x] == opp_id
+                    elif (self.board[0][x] == id
+                            and self.board[1][x] == id
                             and self.board[2][x] == 0):
 
                         return (x, 2)
                 else:
                     # check for diagonal lines
                     if (self.board[0][0] == 0
-                            and self.board[1][1] == opp_id
-                            and self.board[2][2] == opp_id):
+                            and self.board[1][1] == id
+                            and self.board[2][2] == id):
                             
                         return (0, 0)
                     elif (self.board[0][2] == 0
-                            and self.board[1][1] == opp_id
-                            and self.board[2][0] == opp_id):
+                            and self.board[1][1] == id
+                            and self.board[2][0] == id):
                             
                         return (2, 0)
-                    elif ((self.board[0][0] == opp_id
+                    elif ((self.board[0][0] == id
                             and self.board[1][1] == 0
-                            and self.board[2][2] == opp_id)
+                            and self.board[2][2] == id)
                             # TR:BL
-                            or (self.board[0][2] == opp_id
+                            or (self.board[0][2] == id
                             and self.board[1][1] == 0
-                            and self.board[2][0] == opp_id)):
+                            and self.board[2][0] == id)):
 
                         return (1, 1)
-                    elif (self.board[0][0] == opp_id
-                            and self.board[1][1] == opp_id
+                    elif (self.board[0][0] == id
+                            and self.board[1][1] == id
                             and self.board[2][2] == 0):
                             
                         return (2, 2)
-                    elif (self.board[0][2] == opp_id
-                            and self.board[1][1] == opp_id
+                    elif (self.board[0][2] == id
+                            and self.board[1][1] == id
                             and self.board[2][0] == 0):
                             
                         return (0, 2)
@@ -255,7 +252,9 @@ class Game:
             # else go in the opposite corner
             case 1:
                 # try to fill in the opponent's line
-                selected_tile = check_opp()
+                selected_tile = check_almost_win(
+                    int(not self.current_player - 1) + 1
+                )
                 # if there was no move that needed to be blocked
                 if selected_tile is None:
                     match self.cpu_moves[0]:
@@ -277,31 +276,33 @@ class Game:
             # for third and fourth move, try to fill our line, else try
             # to block the opponent's line, else go in another corner
             case 2 | 3:
-                # try to fill the line we have the corners of
-                middle_of_moves = list()
-                for i in range(len(self.cpu_moves) - 1):
-                    middle_x = int(
-                        (self.cpu_moves[i + 1][0]+self.cpu_moves[i][0])/2
-                    )
-                    middle_y = int(
-                        (self.cpu_moves[i + 1][1]+self.cpu_moves[i][1])/2
-                    )
-                    middle_of_moves.append((middle_x, middle_y))
-                for tile in middle_of_moves:
-                    if self.board[tile[1]][tile[0]] == 0:
-                        selected_tile = (tile[0], tile[1])
-                        break 
-                else:
+                # try to fill the line we have 2 tiles in
+                selected_tile = check_almost_win(
+                    self.current_player
+                )
+                if selected_tile is None:
                     # try to fill in the opponent's line
-                    selected_tile = check_opp()
+                    selected_tile = check_almost_win(
+                        int(not self.current_player - 1) + 1
+                    )
                     # if there was no move that needed to be blocked
                     if selected_tile is None:
                         # go in another corner
-                        # check BL, else BR
+                        # check BL, else BR, else any blank
                         if self.board[2][0] == 0:
                             selected_tile = (0, 2)
-                        else:
+                        elif self.board[2][2] == 0:
                             selected_tile = (2, 2)
+                        else:
+                            for x in range(3):
+                                for y in range(3):
+                                    if self.board[y][x] == 0:
+                                        selected_tile = (x,y)
+                                        break
+                                else:
+                                    continue
+                                break
+                            
             # for the fifth move, go in the free space
             # this is only applicable if the cpu is going first
             case 4:
